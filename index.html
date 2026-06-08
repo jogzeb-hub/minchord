@@ -121,94 +121,100 @@
 
     <!-- 코드 빌더 -->
     <div class="builder" id="chordBuilder">
-      <div class="builder-box">
-        <div class="box-label">근음</div>
-        <div class="btn-group" id="rootGroup">
-          <button class="tog sel" data-val="C">C</button><button class="tog" data-val="D">D</button>
-          <button class="tog" data-val="E">E</button><button class="tog" data-val="F">F</button>
-          <button class="tog" data-val="G">G</button><button class="tog" data-val="A">A</button>
-          <button class="tog" data-val="B">B</button>
+      <div class="builder-left">
+        <div class="builder-row">
+          <span class="row-label">근음</span>
+          <div class="btn-group" id="rootGroup">
+            <button class="tog sel" data-val="C">C</button><button class="tog" data-val="D">D</button>
+            <button class="tog" data-val="E">E</button><button class="tog" data-val="F">F</button>
+            <button class="tog" data-val="G">G</button><button class="tog" data-val="A">A</button>
+            <button class="tog" data-val="B">B</button>
+          </div>
+        </div>
+        <div class="builder-row">
+          <span class="row-label">변음</span>
+          <div class="btn-group" id="accGroup">
+            <button class="tog" data-val="b">♭</button>
+            <button class="tog sel" data-val="n">♮</button>
+            <button class="tog" data-val="#">♯</button>
+          </div>
+          <div class="row-sep"></div>
+          <span class="row-label">옥타브</span>
+          <div class="btn-group" id="chordOctGroup">
+            <button class="tog" data-val="2">2</button>
+            <button class="tog sel" data-val="3">3</button>
+            <button class="tog" data-val="4">4</button>
+            <button class="tog" data-val="5">5</button>
+          </div>
+        </div>
+        <div class="builder-row">
+          <span class="row-label">자리바꿈</span>
+          <div class="btn-group" id="invGroup">
+            <button class="tog sel" data-val="0">근위</button>
+            <button class="tog" data-val="1">1전위</button>
+            <button class="tog" data-val="2">2전위</button>
+            <button class="tog" data-val="3">3전위</button>
+          </div>
+        </div>
+        <div class="builder-row">
+          <span class="row-label">코드 타입</span>
+          <div class="btn-group" id="qualGroup">
+            <button class="tog sel" data-val="maj">maj</button><button class="tog" data-val="m">m</button>
+            <button class="tog" data-val="7">7</button><button class="tog" data-val="maj7">maj7</button>
+            <button class="tog" data-val="m7">m7</button><button class="tog" data-val="6">6</button>
+            <button class="tog" data-val="m6">m6</button><button class="tog" data-val="sus2">sus2</button>
+            <button class="tog" data-val="sus4">sus4</button><button class="tog" data-val="dim">dim</button>
+            <button class="tog" data-val="dim7">dim7</button><button class="tog" data-val="aug">aug</button>
+          </div>
         </div>
       </div>
-      <div class="builder-box box-sm">
-        <div class="box-label">변음</div>
-        <div class="btn-group col" id="accGroup">
-          <button class="tog" data-val="b">♭</button>
-          <button class="tog sel" data-val="n">♮</button>
-          <button class="tog" data-val="#">♯</button>
+      <div class="builder-right">
+        <div class="preview-box">
+          <div class="box-label">선택 코드</div>
+          <div class="preview-chord" id="chordPreview">C</div>
+          <div class="dim" style="font-size:.68rem">마디 클릭 → 배치</div>
+          <button class="preview-play-btn" id="chordPreviewPlay">▶ 미리듣기</button>
         </div>
-      </div>
-      <div class="builder-box box-sm">
-        <div class="box-label">옥타브</div>
-        <div class="btn-group col" id="chordOctGroup">
-          <button class="tog" data-val="2">2</button>
-          <button class="tog sel" data-val="3">3</button>
-          <button class="tog" data-val="4">4</button>
-          <button class="tog" data-val="5">5</button>
-        </div>
-      </div>
-      <div class="builder-box box-sm">
-        <div class="box-label">자리바꿈</div>
-        <div class="btn-group col" id="invGroup">
-          <button class="tog sel" data-val="0">근위</button>
-          <button class="tog" data-val="1">1전위</button>
-          <button class="tog" data-val="2">2전위</button>
-          <button class="tog" data-val="3">3전위</button>
-        </div>
-      </div>
-      <div class="builder-box">
-        <div class="box-label">코드 타입</div>
-        <div class="btn-group" id="qualGroup">
-          <button class="tog sel" data-val="maj">maj</button><button class="tog" data-val="m">m</button>
-          <button class="tog" data-val="7">7</button><button class="tog" data-val="maj7">maj7</button>
-          <button class="tog" data-val="m7">m7</button><button class="tog" data-val="6">6</button>
-          <button class="tog" data-val="m6">m6</button><button class="tog" data-val="sus2">sus2</button>
-          <button class="tog" data-val="sus4">sus4</button><button class="tog" data-val="dim">dim</button>
-          <button class="tog" data-val="dim7">dim7</button><button class="tog" data-val="aug">aug</button>
-        </div>
-      </div>
-      <div class="preview-box">
-        <div class="box-label">선택 코드</div>
-        <div class="preview-chord" id="chordPreview">C</div>
-        <div class="dim" style="font-size:.68rem">마디 클릭 → 배치</div>
-        <button class="preview-play-btn" id="chordPreviewPlay">▶ 미리듣기</button>
       </div>
     </div>
 
     <!-- 멜로디 빌더 -->
     <div class="builder hidden" id="melodyBuilder">
-      <div class="builder-box">
-        <div class="box-label">음</div>
-        <div class="btn-group" id="melRootGroup">
-          <button class="tog sel" data-val="C">C</button><button class="tog" data-val="D">D</button>
-          <button class="tog" data-val="E">E</button><button class="tog" data-val="F">F</button>
-          <button class="tog" data-val="G">G</button><button class="tog" data-val="A">A</button>
-          <button class="tog" data-val="B">B</button>
+      <div class="builder-left">
+        <div class="builder-row">
+          <span class="row-label">음</span>
+          <div class="btn-group" id="melRootGroup">
+            <button class="tog sel" data-val="C">C</button><button class="tog" data-val="D">D</button>
+            <button class="tog" data-val="E">E</button><button class="tog" data-val="F">F</button>
+            <button class="tog" data-val="G">G</button><button class="tog" data-val="A">A</button>
+            <button class="tog" data-val="B">B</button>
+          </div>
+        </div>
+        <div class="builder-row">
+          <span class="row-label">변음</span>
+          <div class="btn-group" id="melAccGroup">
+            <button class="tog" data-val="b">♭</button>
+            <button class="tog sel" data-val="n">♮</button>
+            <button class="tog" data-val="#">♯</button>
+          </div>
+          <div class="row-sep"></div>
+          <span class="row-label">옥타브</span>
+          <div class="btn-group" id="melOctGroup">
+            <button class="tog" data-val="1">1</button>
+            <button class="tog" data-val="2">2</button>
+            <button class="tog" data-val="3">3</button>
+            <button class="tog sel" data-val="4">4</button>
+            <button class="tog" data-val="5">5</button>
+          </div>
         </div>
       </div>
-      <div class="builder-box box-sm">
-        <div class="box-label">변음</div>
-        <div class="btn-group col" id="melAccGroup">
-          <button class="tog" data-val="b">♭</button>
-          <button class="tog sel" data-val="n">♮</button>
-          <button class="tog" data-val="#">♯</button>
-        </div>
-      </div>
-      <div class="builder-box box-sm">
-        <div class="box-label">옥타브</div>
-        <div class="btn-group col" id="melOctGroup">
-          <button class="tog" data-val="1">1</button>
-          <button class="tog" data-val="2">2</button>
-          <button class="tog" data-val="3">3</button>
-          <button class="tog sel" data-val="4">4</button>
-          <button class="tog" data-val="5">5</button>
-        </div>
-      </div>
+      <div class="builder-right">
       <div class="preview-box">
         <div class="box-label">선택 음</div>
         <div class="preview-chord" id="melPreview">C4</div>
         <div class="dim" style="font-size:.68rem">멜로디 트랙에 배치</div>
         <button class="preview-play-btn" id="melPreviewPlay">▶ 미리듣기</button>
+      </div>
       </div>
     </div>
   </div>

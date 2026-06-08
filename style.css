@@ -38,7 +38,12 @@ select{background:var(--s2);border:1px solid var(--bd);color:var(--text);padding
 .builder-tabs{display:flex;gap:0;padding:6px 12px 0;}
 .tab-btn{padding:5px 14px;border-radius:8px 8px 0 0;border:1px solid transparent;background:none;color:var(--dim);cursor:pointer;font-size:.8rem;font-weight:600;transition:all .12s;}
 .tab-btn.active{background:var(--s2);border-color:var(--bd);border-bottom-color:var(--s2);color:var(--text);}
-.builder{display:flex;flex-wrap:wrap;gap:7px;align-items:stretch;padding:7px 12px 8px;}
+.builder{display:flex;flex-direction:row;gap:10px;padding:7px 12px 8px;align-items:flex-start;}
+.builder-left{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;}
+.builder-right{flex-shrink:0;display:flex;align-items:center;}
+.builder-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.row-label{font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;min-width:40px;}
+.row-sep{width:1px;height:14px;background:var(--bd);flex-shrink:0;margin:0 2px;}
 .builder-box{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;display:flex;flex-direction:column;gap:5px;}
 .box-sm{min-width:50px;}
 .box-label{font-size:.62rem;text-transform:uppercase;letter-spacing:.7px;color:var(--dim);}
