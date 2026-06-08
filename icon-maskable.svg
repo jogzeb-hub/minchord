@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#6c63ff"/>
+  <!-- M -->
+  <text x="60" y="320" font-family="'Segoe UI',system-ui,sans-serif" font-weight="900" font-size="200" fill="#ffffff">M</text>
+  <!-- 음표 -->
+  <circle cx="370" cy="345" r="36" fill="#ffffff" opacity="0.9"/>
+  <rect x="402" y="170" width="14" height="180" fill="#ffffff" opacity="0.9" rx="7"/>
+  <rect x="402" y="170" width="76" height="13" fill="#ffffff" opacity="0.9" rx="6"/>
+  <rect x="464" y="170" width="14" height="76" fill="#ffffff" opacity="0.9" rx="7"/>
+</svg>
