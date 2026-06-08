@@ -16,7 +16,7 @@ const TRACK_COLORS = ['#6c63ff','#e85a4a','#4ecdc4','#e8a44a','#9e5aae','#5a9e6f
 
 // ─── STATE ───────────────────────────────
 let S = {
-  bpm:80, numBars:8, globalRepeat:1, barsPerRow:8,
+  bpm:130, numBars:8, globalRepeat:1, barsPerRow:8,
   playStart:0, playEnd:null,  // null = 전체
   builderMode:'chord',
   // chord builder
@@ -937,32 +937,16 @@ function renderTracks() {
         ${track.type==='chord'?`
         <select class="track-pattern" data-tid="${track.id}">
           <option value="chord"${track.pattern==='chord'?' selected':''}>코드 (전체)</option>
-          <option value="arp"${track.pattern==='arp'?' selected':''}>아르페지오 ↑</option>
-          <option value="arpdn"${track.pattern==='arpdn'?' selected':''}>아르페지오 ↓</option>
-          <option value="arpud"${track.pattern==='arpud'?' selected':''}>아르페지오 ↕</option>
-          <option value="arp1324"${track.pattern==='arp1324'?' selected':''}>아르페지오 1-3-2-4</option>
-          <option value="arpinch"${track.pattern==='arpinch'?' selected':''}>아르페지오 핀치</option>
-          <option value="arprnd"${track.pattern==='arprnd'?' selected':''}>아르페지오 랜덤</option>
-          <option value="bass"${track.pattern==='bass'?' selected':''}>쿵짝 (4/4)</option>
-          <option value="waltz"${track.pattern==='waltz'?' selected':''}>쿵짝짝 (3/4)</option>
+          <option value="fingerstyle"${track.pattern==='fingerstyle'?' selected':''}>핑거스타일</option>
+          <option value="balladpiano"${track.pattern==='balladpiano'?' selected':''}>피아노 발라드</option>
+          <option value="popoffbeat"${track.pattern==='popoffbeat'?' selected':''}>팝 오프비트</option>
+          <option value="shuffle"${track.pattern==='shuffle'?' selected':''}>셔플</option>
           <option value="bossa"${track.pattern==='bossa'?' selected':''}>보사노바</option>
           <option value="reggae"${track.pattern==='reggae'?' selected':''}>레게</option>
           <option value="funk"${track.pattern==='funk'?' selected':''}>훵크</option>
           <option value="afrocuban"${track.pattern==='afrocuban'?' selected':''}>아프로큐반</option>
           <option value="jazzcomp"${track.pattern==='jazzcomp'?' selected':''}>재즈 콤핑</option>
-          <option value="fingerstyle"${track.pattern==='fingerstyle'?' selected':''}>핑거스타일</option>
-          <option value="balladpiano"${track.pattern==='balladpiano'?' selected':''}>피아노 발라드</option>
         </select>
-        ${['arp','arpdn','arpud','arp1324','arpinch','arprnd'].includes(track.pattern)?`<select class="arp-speed" data-tid="${track.id}">
-          <option value="1"${(track.arpSpeed||1)===1?' selected':''}>4분음표</option>
-          <option value="2"${(track.arpSpeed||1)===2?' selected':''}>8분음표</option>
-          <option value="4"${(track.arpSpeed||1)===4?' selected':''}>16분음표</option>
-        </select>`:''}
-        ${['arp','arpdn','arpud','arp1324','arpinch','arprnd'].includes(track.pattern)?`<select class="arp-range" data-tid="${track.id}">
-          <option value="standard"${(track.arpRange||'standard')==='standard'?' selected':''}>표준(4음)</option>
-          <option value="full"${track.arpRange==='full'?' selected':''}>화음 전체</option>
-          <option value="wide"${track.arpRange==='wide'?' selected':''}>2옥타브</option>
-        </select>`:''}
         <button class="tie-all-btn" data-tid="${track.id}" title="연속 동일 코드 일괄 이음">🔗 일괄 이음</button>
         <button class="tie-clr-btn" data-tid="${track.id}" title="모든 이음 해제">✂ 일괄 이음 해제</button>`
         : track.type==='drum' ? ``
@@ -2430,6 +2414,67 @@ function scheduleBlock(track, item, t, dur, barDur) {
       break;
     }
 
+    case 'popoffbeat': {
+      // 베이스 1&3박, 코드 오프비트 스태카토
+      const eighth = barDur / 8;
+      const bassNote = notes[0].replace(/\d+/, m => String(Math.max(1, parseInt(m)-1)));
+      const upper = notes.length > 1 ? notes.slice(1) : notes;
+      const barsCount = Math.round(dur / barDur);
+      const vel = barVel(item, 0.65);
+      const bv = Math.min(1.2, vel * bassLoudComp(bassNote));
+      // [8분음표 위치, 베이스여부, 벨로시티배율, 길이배율]
+      const PAT = [
+        [0, true,  1.00, 0.80],
+        [1, false, 0.70, 0.38],
+        [3, false, 0.75, 0.38],
+        [4, true,  0.90, 0.75],
+        [5, false, 0.65, 0.38],
+        [7, false, 0.80, 0.38],
+      ];
+      for (let bar = 0; bar < barsCount; bar++) {
+        const bt = t + bar * barDur;
+        PAT.forEach(([pos, isBass, vm, dm]) => {
+          const nt = `${secToTick(bt + pos * eighth)}i`;
+          if (isBass) {
+            Tone.Transport.schedule(time => { if(!S.isPlaying)return; track.synth.triggerAttackRelease(bassNote, eighth*dm, time, Math.min(1.2, bv*vm)); }, nt);
+          } else {
+            Tone.Transport.schedule(time => { if(!S.isPlaying)return; track.synth.triggerAttackRelease(upper, eighth*dm, time, Math.min(1.0, vel*vm)); }, nt);
+          }
+        });
+      }
+      break;
+    }
+
+    case 'shuffle': {
+      // 블루스 셔플: 3연음 장단, 베이스 1&3, 코드 백비트 2&4
+      const beat = barDur / 4;
+      const triplet = beat / 3;
+      const bassNote = notes[0].replace(/\d+/, m => String(Math.max(1, parseInt(m)-1)));
+      const bass5 = notes.length > 2
+        ? notes[2].replace(/\d+/, m => String(Math.max(1, parseInt(m)-1)))
+        : bassNote;
+      const upper = notes.length > 1 ? notes.slice(1) : notes;
+      const barsCount = Math.round(dur / barDur);
+      const vel = barVel(item, 0.65);
+      const bv = Math.min(1.2, vel * bassLoudComp(bassNote));
+      for (let bar = 0; bar < barsCount; bar++) {
+        const bt = t + bar * barDur;
+        // beat 1: 베이스 루트
+        Tone.Transport.schedule(time => { if(!S.isPlaying)return; track.synth.triggerAttackRelease(bassNote, beat*0.75, time, Math.min(1.2, bv)); }, `${secToTick(bt)}i`);
+        // and of 1 (3연음 3번째): 코드 스태카토
+        Tone.Transport.schedule(time => { if(!S.isPlaying)return; track.synth.triggerAttackRelease(upper, triplet*0.65, time, Math.min(1.0, vel*0.62)); }, `${secToTick(bt + triplet*2)}i`);
+        // beat 2: 코드 백비트
+        Tone.Transport.schedule(time => { if(!S.isPlaying)return; track.synth.triggerAttackRelease(upper, beat*0.52, time, Math.min(1.0, vel*0.82)); }, `${secToTick(bt + beat)}i`);
+        // beat 3: 베이스 5도
+        Tone.Transport.schedule(time => { if(!S.isPlaying)return; track.synth.triggerAttackRelease(bass5, beat*0.75, time, Math.min(1.2, bv*0.88)); }, `${secToTick(bt + beat*2)}i`);
+        // and of 3: 코드 스태카토
+        Tone.Transport.schedule(time => { if(!S.isPlaying)return; track.synth.triggerAttackRelease(upper, triplet*0.65, time, Math.min(1.0, vel*0.58)); }, `${secToTick(bt + beat*2 + triplet*2)}i`);
+        // beat 4: 코드 백비트
+        Tone.Transport.schedule(time => { if(!S.isPlaying)return; track.synth.triggerAttackRelease(upper, beat*0.52, time, Math.min(1.0, vel*0.76)); }, `${secToTick(bt + beat*3)}i`);
+      }
+      break;
+    }
+
     case 'fingerstyle': {
       // 핑거스타일: 엄지(베이스) + 손가락이 화음 음을 교대로 뜯음
       const half = barDur / 8;
@@ -2933,7 +2978,6 @@ $('builderToggleBtn').addEventListener('click', () => {
 $('drumEditorModal').addEventListener('click', e => { if(e.target===$('drumEditorModal')) $('drumEditorModal').classList.add('hidden'); });
 
 // ─── INIT ─────────────────────────────────
-createTrack('chord');
 createTrack('chord');
 updatePreviews();
 renderAll();
