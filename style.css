@@ -52,8 +52,8 @@ select{background:var(--s2);border:1px solid var(--bd);color:var(--text);padding
 .tog{padding:3px 8px;border-radius:5px;border:1px solid var(--bd);background:var(--s2);color:var(--dim);cursor:pointer;font-size:.78rem;font-weight:600;transition:all .1s;white-space:nowrap;}
 .tog:hover{border-color:var(--acc);color:var(--text);}
 .tog.sel{background:var(--acc);border-color:var(--acc);color:#fff;}
-.preview-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 14px;min-width:80px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;}
-.preview-chord{font-size:1.6rem;font-weight:800;color:#fff;line-height:1;transition:color .12s;}
+.preview-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:5px 10px;min-width:60px;max-width:72px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;}
+.preview-chord{font-size:1.1rem;font-weight:800;color:#fff;line-height:1;transition:color .12s;text-align:center;}
 
 /* HINT BAR */
 .hint-bar{display:flex;align-items:center;gap:10px;padding:5px 12px;background:#1e1500;border-bottom:1px solid var(--rep);flex-shrink:0;font-size:.8rem;color:var(--rep);}
@@ -212,7 +212,7 @@ select{background:var(--s2);border:1px solid var(--bd);color:var(--text);padding
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* PREVIEW BUTTON */
-.preview-play-btn{margin-top:5px;padding:3px 10px;border-radius:5px;border:1px solid var(--bd);background:var(--s2);color:var(--acc);cursor:pointer;font-size:.75rem;width:100%;}
+.preview-play-btn{margin-top:4px;padding:3px 6px;border-radius:5px;border:1px solid var(--bd);background:var(--s2);color:var(--acc);cursor:pointer;font-size:.65rem;width:100%;}
 .preview-play-btn:hover{background:var(--acc);color:#fff;}
 
 /* ACTIVE TOGGLE (메트로놈 등) */
