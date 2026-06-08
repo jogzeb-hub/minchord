@@ -1,10 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#6c63ff"/>
-  <!-- M -->
-  <text x="60" y="320" font-family="'Segoe UI',system-ui,sans-serif" font-weight="900" font-size="200" fill="#ffffff">M</text>
-  <!-- 음표 -->
-  <circle cx="370" cy="345" r="36" fill="#ffffff" opacity="0.9"/>
-  <rect x="402" y="170" width="14" height="180" fill="#ffffff" opacity="0.9" rx="7"/>
-  <rect x="402" y="170" width="76" height="13" fill="#ffffff" opacity="0.9" rx="6"/>
-  <rect x="464" y="170" width="14" height="76" fill="#ffffff" opacity="0.9" rx="7"/>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16103a"/>
+      <stop offset="100%" stop-color="#7c74ff"/>
+    </linearGradient>
+  </defs>
+  <!-- 배경 (마스크용: 꽉 채움) -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <!-- 왼쪽 음표 머리 (safe zone 안으로 살짝 안쪽) -->
+  <ellipse cx="168" cy="350" rx="60" ry="44" transform="rotate(-18 168 350)" fill="white"/>
+  <!-- 오른쪽 음표 머리 -->
+  <ellipse cx="342" cy="300" rx="60" ry="44" transform="rotate(-18 342 300)" fill="white"/>
+  <!-- 왼쪽 기둥 -->
+  <rect x="216" y="155" width="20" height="202" rx="10" fill="white"/>
+  <!-- 오른쪽 기둥 -->
+  <rect x="390" y="106" width="20" height="201" rx="10" fill="white"/>
+  <!-- 빔 1 -->
+  <path d="M216,155 L410,103 L410,135 L216,187 Z" fill="white"/>
+  <!-- 빔 2 -->
+  <path d="M216,192 L410,140 L410,172 L216,224 Z" fill="white"/>
 </svg>

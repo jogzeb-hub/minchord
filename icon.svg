@@ -1,11 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="90" fill="#0f0f17"/>
-  <rect width="512" height="512" rx="90" fill="#6c63ff" opacity="0.15"/>
-  <!-- M -->
-  <text x="80" y="310" font-family="'Segoe UI',system-ui,sans-serif" font-weight="900" font-size="210" fill="#6c63ff">M</text>
-  <!-- 음표 -->
-  <circle cx="370" cy="340" r="38" fill="#6c63ff"/>
-  <rect x="404" y="160" width="16" height="185" fill="#6c63ff" rx="8"/>
-  <rect x="404" y="160" width="80" height="14" fill="#6c63ff" rx="7"/>
-  <rect x="468" y="160" width="16" height="80" fill="#6c63ff" rx="8"/>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16103a"/>
+      <stop offset="100%" stop-color="#7c74ff"/>
+    </linearGradient>
+  </defs>
+  <!-- 배경 -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- 왼쪽 음표 머리 -->
+  <ellipse cx="152" cy="355" rx="66" ry="48" transform="rotate(-18 152 355)" fill="white"/>
+  <!-- 오른쪽 음표 머리 -->
+  <ellipse cx="338" cy="302" rx="66" ry="48" transform="rotate(-18 338 302)" fill="white"/>
+  <!-- 왼쪽 기둥 -->
+  <rect x="202" y="140" width="22" height="222" rx="11" fill="white"/>
+  <!-- 오른쪽 기둥 -->
+  <rect x="388" y="86" width="22" height="223" rx="11" fill="white"/>
+  <!-- 빔 1 (두꺼운 가로줄) -->
+  <path d="M202,140 L410,84 L410,118 L202,174 Z" fill="white"/>
+  <!-- 빔 2 -->
+  <path d="M202,178 L410,122 L410,156 L202,212 Z" fill="white"/>
 </svg>
