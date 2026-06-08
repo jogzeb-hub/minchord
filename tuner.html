@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎤 실시간 음 감지기</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --bg:#0f0f17;--s1:#1a1a2e;--s2:#252540;--bd:#2e2e4e;
+      --acc:#6c63ff;--text:#e0e0f0;--dim:#6666aa;
+      --green:#4ecdc4;--red:#e85a4a;--blue:#4a90d9;--yellow:#ffe66d;
+    }
+    body{
+      background:var(--bg);color:var(--text);
+      font-family:'Segoe UI',system-ui,sans-serif;
+      min-height:100vh;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;overflow-x:hidden;
+    }
+
+    .back-link{
+      position:fixed;top:14px;left:14px;
+      color:var(--dim);text-decoration:none;font-size:.8rem;
+      padding:5px 12px;border:1px solid var(--bd);border-radius:7px;
+      background:var(--s1);transition:all .12s;z-index:10;
+    }
+    .back-link:hover{color:var(--text);border-color:var(--acc);}
+
+    .app{
+      width:100%;max-width:440px;padding:20px;
+      display:flex;flex-direction:column;align-items:center;gap:22px;
+    }
+
+    /* ── HEADER ── */
+    .hdr{display:flex;align-items:center;gap:8px;}
+    .status-dot{
+      width:9px;height:9px;border-radius:50%;
+      background:var(--bd);flex-shrink:0;transition:background .3s;
+    }
+    .status-dot.on{background:var(--green);box-shadow:0 0 8px var(--green);}
+    h1{font-size:1rem;color:var(--dim);font-weight:600;letter-spacing:.5px;}
+
+    /* ── CENTS METER ── */
+    .meter-wrap{width:100%;}
+    .meter-track{
+      position:relative;height:10px;border-radius:5px;
+      background:linear-gradient(to right, var(--blue) 0%, var(--s2) 35%, var(--s2) 65%, var(--red) 100%);
+      margin:0 6px;
+    }
+    .meter-center{
+      position:absolute;top:-5px;left:50%;transform:translateX(-50%);
+      width:2px;height:20px;background:rgba(255,255,255,.25);border-radius:1px;
+    }
+    .needle{
+      position:absolute;top:50%;left:50%;
+      width:20px;height:20px;border-radius:50%;
+      transform:translate(-50%,-50%);
+      background:var(--dim);
+      box-shadow:0 0 0 3px var(--bg), 0 0 12px currentColor;
+      transition:left .07s linear, background .12s;
+    }
+    .needle.in-tune{background:var(--green);}
+    .needle.flat    {background:var(--blue);}
+    .needle.sharp   {background:var(--red);}
+    .meter-labels{
+      display:flex;justify-content:space-between;
+      font-size:.62rem;color:var(--dim);margin-top:6px;padding:0 4px;
+    }
+    .cents-text{
+      text-align:center;font-size:.78rem;color:var(--dim);
+      margin-top:4px;font-variant-numeric:tabular-nums;min-height:1.2em;
+      transition:color .12s;
+    }
+    .cents-text.in-tune{color:var(--green);}
+
+    /* ── NOTE DISPLAY ── */
+    .note-wrap{
+      display:flex;align-items:flex-end;gap:2px;
+      line-height:1;user-select:none;
+    }
+    .note-main{
+      font-size:clamp(4rem,20vw,6.5rem);font-weight:900;
+      letter-spacing:-2px;color:var(--bd);
+      transition:color .12s, transform .1s;
+      min-width:2ch;text-align:center;
+    }
+    .note-main.active{color:var(--text);}
+    .note-main.stable{color:var(--green);transform:scale(1.04);}
+    .note-oct{
+      font-size:clamp(1.5rem,7vw,2.4rem);font-weight:700;
+      color:var(--dim);padding-bottom:.5em;min-width:1ch;
+    }
+
+    .note-kr{
+      font-size:1rem;color:var(--dim);
+      letter-spacing:.5px;font-weight:500;min-height:1.4em;
+    }
+    .freq-text{
+      font-size:.95rem;color:var(--dim);
+      font-variant-numeric:tabular-nums;min-height:1.3em;
+    }
+
+    /* ── VOLUME ── */
+    .vol-wrap{width:100%;}
+    .vol-label{font-size:.62rem;color:var(--dim);margin-bottom:4px;text-align:center;}
+    .vol-track{
+      width:100%;height:5px;background:var(--s2);
+      border-radius:3px;overflow:hidden;
+    }
+    .vol-fill{
+      height:100%;width:0%;
+      background:linear-gradient(to right, var(--acc), var(--green));
+      border-radius:3px;transition:width .04s;
+    }
+
+    /* ── BUTTON ── */
+    .start-btn{
+      padding:11px 36px;font-size:.95rem;font-weight:700;
+      border:none;border-radius:10px;cursor:pointer;
+      background:var(--acc);color:#fff;transition:all .15s;
+    }
+    .start-btn:hover{background:#5a52dd;transform:translateY(-1px);}
+    .start-btn.stop{background:var(--red);}
+
+    /* ── HISTORY ── */
+    .history{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;min-height:26px;}
+    .chip{
+      padding:3px 10px;border-radius:20px;
+      background:var(--s2);border:1px solid var(--bd);
+      font-size:.72rem;color:var(--dim);font-weight:600;
+      opacity:.4;transition:opacity .25s;
+    }
+    .chip:last-child{opacity:1;color:var(--text);border-color:var(--acc);}
+
+    /* ── IDLE HINT ── */
+    .idle-hint{
+      font-size:.78rem;color:var(--dim);text-align:center;
+      line-height:1.6;
+    }
+  </style>
+</head>
+<body>
+<a class="back-link" href="index.html">← 시퀀서</a>
+
+<div class="app">
+
+  <div class="hdr">
+    <div class="status-dot" id="dot"></div>
+    <h1>실시간 음 감지기</h1>
+  </div>
+
+  <!-- Cents meter -->
+  <div class="meter-wrap">
+    <div class="meter-track">
+      <div class="meter-center"></div>
+      <div class="needle" id="needle"></div>
+    </div>
+    <div class="meter-labels">
+      <span>♭ −50¢</span><span>정확</span><span>+50¢ ♯</span>
+    </div>
+    <div class="cents-text" id="centsText">—</div>
+  </div>
+
+  <!-- Note -->
+  <div class="note-wrap">
+    <div class="note-main" id="noteMain">—</div>
+    <div class="note-oct"  id="noteOct"></div>
+  </div>
+  <div class="note-kr"  id="noteKr">마이크를 시작하면 음을 감지해요</div>
+  <div class="freq-text" id="freqText">— Hz</div>
+
+  <!-- Volume -->
+  <div class="vol-wrap">
+    <div class="vol-label">입력 레벨</div>
+    <div class="vol-track"><div class="vol-fill" id="volFill"></div></div>
+  </div>
+
+  <button class="start-btn" id="startBtn">🎤 마이크 시작</button>
+
+  <div class="history" id="history"></div>
+
+</div>
+
+<script>
+// ── NOTE TABLES ──────────────────────────
+const NOTES  = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const NOTE_KR = {
+  'C':'도(Do)','C#':'도♯/레♭','D':'레(Re)','D#':'레♯/미♭',
+  'E':'미(Mi)','F':'파(Fa)','F#':'파♯/솔♭','G':'솔(Sol)',
+  'G#':'솔♯/라♭','A':'라(La)','A#':'라♯/시♭','B':'시(Si)'
+};
+
+// ── STATE ───────────────────────────────
+let audioCtx=null, analyser=null, srcNode=null, stream=null;
+let rafId=null, running=false;
+let stableFrames=0, prevKey='';
+const history = [];
+const BUF = 2048;
+
+// ── PITCH DETECTION ──────────────────────
+// NSDF (Normalized Square Difference Function) autocorrelation
+function detectPitch(buf, sr) {
+  // RMS check
+  let rms = 0;
+  for (let i=0;i<buf.length;i++) rms+=buf[i]*buf[i];
+  rms = Math.sqrt(rms/buf.length);
+  if (rms < 0.007) return {freq:null, rms};
+
+  const minLag = Math.floor(sr/1500); // ~1500Hz upper limit
+  const maxLag = Math.min(Math.ceil(sr/50), buf.length-2); // ~50Hz lower limit
+
+  let bestVal=-2, bestLag=-1;
+  for (let lag=minLag; lag<=maxLag; lag++) {
+    let num=0, da=0, db=0;
+    for (let i=0; i<buf.length-lag; i++) {
+      num += buf[i]*buf[i+lag];
+      da  += buf[i]*buf[i];
+      db  += buf[i+lag]*buf[i+lag];
+    }
+    const nsdf = (da+db>0) ? 2*num/(da+db) : 0;
+    if (nsdf > bestVal) { bestVal=nsdf; bestLag=lag; }
+  }
+
+  if (bestLag<0 || bestVal<0.82) return {freq:null, rms};
+
+  // Parabolic sub-sample refinement
+  if (bestLag>minLag && bestLag<maxLag) {
+    const y1=nsdfAt(buf,bestLag-1), y2=bestVal, y3=nsdfAt(buf,bestLag+1);
+    const d=2*(2*y2-y1-y3);
+    if (Math.abs(d)>1e-9) bestLag += (y3-y1)/d;
+  }
+
+  return {freq: sr/bestLag, rms, conf: bestVal};
+}
+
+function nsdfAt(buf, lag) {
+  let num=0,da=0,db=0;
+  for (let i=0;i<buf.length-lag;i++) {
+    num+=buf[i]*buf[i+lag]; da+=buf[i]*buf[i]; db+=buf[i+lag]*buf[i+lag];
+  }
+  return (da+db>0) ? 2*num/(da+db) : 0;
+}
+
+function freqToInfo(freq) {
+  if (!freq||freq<50||freq>4000) return null;
+  const midi    = 12*Math.log2(freq/440)+69;
+  const midiInt = Math.round(midi);
+  const cents   = Math.round((midi-midiInt)*100);
+  const idx     = ((midiInt%12)+12)%12;
+  const oct     = Math.floor(midiInt/12)-1;
+  return {note:NOTES[idx], oct, cents, freq:Math.round(freq*10)/10};
+}
+
+// ── UI UPDATE ────────────────────────────
+const $ = id => document.getElementById(id);
+
+function updateUI(info, rms) {
+  // volume
+  $('volFill').style.width = Math.min(100, Math.round(rms*420)) + '%';
+
+  if (!info) {
+    $('needle').style.left='50%';
+    $('needle').className='needle';
+    $('noteMain').className='note-main';
+    $('noteMain').textContent='—';
+    $('noteOct').textContent='';
+    $('centsText').className='cents-text';
+    $('centsText').textContent='—';
+    $('freqText').textContent='— Hz';
+    return;
+  }
+
+  // cents needle
+  const pct = Math.max(2, Math.min(98, 50+info.cents));
+  const needle = $('needle');
+  needle.style.left = pct+'%';
+  const abs = Math.abs(info.cents);
+  needle.className = 'needle '+(abs<8?'in-tune':info.cents<0?'flat':'sharp');
+
+  // note name
+  const key = info.note+info.oct;
+  if (key===prevKey) { stableFrames=Math.min(stableFrames+1,30); }
+  else               { stableFrames=0; prevKey=key; }
+  const stable = stableFrames>=5;
+
+  const nm = $('noteMain');
+  nm.textContent = info.note;
+  nm.className   = 'note-main'+(stable?' stable':' active');
+  $('noteOct').textContent = info.oct;
+  $('noteKr').textContent  = NOTE_KR[info.note]||info.note;
+  $('freqText').textContent = info.freq+' Hz';
+
+  const ct = $('centsText');
+  ct.textContent = (info.cents>=0?'+':'')+info.cents+'¢  '+(abs<8?'✓ 정확':'');
+  ct.className = 'cents-text'+(abs<8?' in-tune':'');
+
+  // history: record when note becomes stable
+  if (stable && stableFrames===5) {
+    history.push(key);
+    if (history.length>10) history.shift();
+    $('history').innerHTML = history.map(n=>`<span class="chip">${n}</span>`).join('');
+  }
+}
+
+// ── AUDIO LOOP ───────────────────────────
+function loop() {
+  if (!running) return;
+  const buf = new Float32Array(BUF);
+  analyser.getFloatTimeDomainData(buf);
+  const r = detectPitch(buf, audioCtx.sampleRate);
+  updateUI(r.freq ? freqToInfo(r.freq) : null, r.rms);
+  rafId = requestAnimationFrame(loop);
+}
+
+// ── START / STOP ─────────────────────────
+async function start() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}, video:false});
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    srcNode  = audioCtx.createMediaStreamSource(stream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = BUF;
+    analyser.smoothingTimeConstant = 0;
+    srcNode.connect(analyser);
+    running = true;
+    $('dot').classList.add('on');
+    $('startBtn').textContent='⏹ 정지';
+    $('startBtn').classList.add('stop');
+    $('noteKr').textContent='감지 중...';
+    loop();
+  } catch(e) {
+    alert('마이크 권한이 필요해요.\n브라우저 주소창 옆 🔒 아이콘에서 허용해 주세요.\n\n오류: '+e.message);
+  }
+}
+
+function stop() {
+  running = false;
+  if (rafId) cancelAnimationFrame(rafId);
+  if (stream) stream.getTracks().forEach(t=>t.stop());
+  if (audioCtx) audioCtx.close();
+  stream=null; audioCtx=null; analyser=null; srcNode=null;
+  stableFrames=0; prevKey='';
+  $('dot').classList.remove('on');
+  $('startBtn').textContent='🎤 마이크 시작';
+  $('startBtn').classList.remove('stop');
+  $('noteKr').textContent='마이크를 시작하면 음을 감지해요';
+  updateUI(null, 0);
+}
+
+$('startBtn').addEventListener('click', ()=> running ? stop() : start());
+</script>
+</body>
+</html>

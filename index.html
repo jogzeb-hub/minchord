@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chord Sequencer</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+</head>
+<body>
+<div class="app">
+
+  <!-- 상단 툴바 -->
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn">☰</button>
+    <span class="logo">🎵</span>
+    <div class="ctrl-group">
+      <label>BPM</label>
+      <button class="nb" id="bpmMinus">−</button>
+      <input class="bpm-input" id="bpmInput" type="number" min="40" max="220" value="80">
+      <button class="nb" id="bpmPlus">＋</button>
+    </div>
+    <div class="ctrl-group">
+      <label>마디</label>
+      <button class="nb" id="barsMinus">−</button>
+      <input class="bars-input" id="barsVal" type="number" min="1" max="256" value="8">
+      <button class="nb" id="barsPlus">＋</button>
+    </div>
+    <button class="action-btn" id="undoBtn" title="실행취소 (Ctrl+Z)">↩ 취소</button>
+    <button class="action-btn" id="redoBtn" title="다시실행 (Ctrl+Shift+Z)">↪ 다시</button>
+  </header>
+
+  <!-- 메뉴 패널 -->
+  <div class="menu-panel hidden" id="menuPanel">
+    <div class="menu-panel-inner">
+      <!-- 행 1: 반복 / 전조 / 탭BPM / 줄당마디 / 스윙 -->
+      <div class="menu-row">
+        <div class="ctrl-group">
+          <label>반복</label>
+          <button class="nb" id="repMinus">−</button>
+          <span class="val" id="repVal">1</span>
+          <button class="nb" id="repPlus">＋</button>
+        </div>
+        <div class="sep"></div>
+        <div class="ctrl-group">
+          <label>전조</label>
+          <button class="nb" id="transDown" title="반음 내리기">♭−</button>
+          <button class="nb" id="transUp"   title="반음 올리기">♯＋</button>
+          <button class="nb" id="octDown"   title="옥타브 내리기">↓8</button>
+          <button class="nb" id="octUp"     title="옥타브 올리기">↑8</button>
+        </div>
+        <div class="sep"></div>
+        <div class="ctrl-group">
+          <label>탭BPM</label>
+          <button class="nb tap-btn" id="tapTempoBtn" title="박자에 맞춰 탭 → BPM 자동 설정">탭</button>
+          <button class="nb" id="bpmX2Btn" title="BPM 2배">×2</button>
+          <button class="nb" id="bpmD2Btn" title="BPM 절반">÷2</button>
+        </div>
+        <div class="sep"></div>
+        <div class="ctrl-group">
+          <label>줄당 마디</label>
+          <select id="bprSel">
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="6">6</option>
+            <option value="8" selected>8</option>
+            <option value="16">16</option>
+            <option value="32">32</option>
+            <option value="0">제한없음</option>
+          </select>
+        </div>
+        <div class="sep"></div>
+        <div class="ctrl-group">
+          <label>스윙</label>
+          <input type="range" id="swingSlider" min="0" max="33" step="1" value="0" style="width:55px;vertical-align:middle">
+          <span id="swingVal" style="min-width:26px;font-size:.72rem">0%</span>
+        </div>
+      </div>
+      <!-- 행 2: 도돌이표 / 구간 -->
+      <div class="menu-row">
+        <div class="ctrl-group">
+          <label>도돌이표</label>
+          <button class="action-btn" id="repSetBtn">구간 설정</button>
+          <span class="rep-info hidden" id="repInfo">
+            <span id="repRange"></span>
+            <button class="nb" id="repCntMinus">−</button>
+            <span class="val" id="repCntVal">2</span>×
+            <button class="nb" id="repCntPlus">＋</button>
+            <button class="action-btn danger" id="repClearBtn">지우기</button>
+          </span>
+        </div>
+        <div class="sep"></div>
+        <div class="ctrl-group">
+          <label>구간</label>
+          <input class="range-input" id="psInput" type="number" min="1" value="1" title="시작 마디">
+          <span class="dim">~</span>
+          <input class="range-input" id="peInput" type="number" min="1" value="8" title="끝 마디">
+          <span class="dim">마디</span>
+          <button class="action-btn" id="rangeAllBtn">전체</button>
+        </div>
+      </div>
+      <!-- 행 3: 메트로놈 / 휴머나이즈 / 음감지 / 프로젝트 / 전체지우기 -->
+      <div class="menu-row">
+        <button class="action-btn" id="metroBtn" title="메트로놈">🥁 메트로놈</button>
+        <button class="action-btn" id="humanizeBtn" title="음 강도를 자연스럽게 랜덤 변화">🎲 휴머나이즈</button>
+        <a class="action-btn" href="tuner.html" target="_blank" title="실시간 음 감지기" style="text-decoration:none">🎤 음감지</a>
+        <button class="action-btn" id="projectBtn">📁 프로젝트</button>
+        <button class="clear-btn" id="clearAll">전체 지우기</button>
+      </div>
+    </div>
+  </div>
+  <div class="menu-backdrop hidden" id="menuBackdrop"></div>
+
+  <!-- 빌더 (코드 / 멜로디 탭) -->
+  <div class="builder-wrap">
+    <div class="builder-tabs">
+      <button class="tab-btn active" data-mode="chord">🎸 코드</button>
+      <button class="tab-btn" data-mode="melody">🎹 멜로디</button>
+      <button class="builder-toggle-btn" id="builderToggleBtn">▲</button>
+    </div>
+
+    <!-- 코드 빌더 -->
+    <div class="builder" id="chordBuilder">
+      <div class="builder-box">
+        <div class="box-label">근음</div>
+        <div class="btn-group" id="rootGroup">
+          <button class="tog sel" data-val="C">C</button><button class="tog" data-val="D">D</button>
+          <button class="tog" data-val="E">E</button><button class="tog" data-val="F">F</button>
+          <button class="tog" data-val="G">G</button><button class="tog" data-val="A">A</button>
+          <button class="tog" data-val="B">B</button>
+        </div>
+      </div>
+      <div class="builder-box box-sm">
+        <div class="box-label">변음</div>
+        <div class="btn-group col" id="accGroup">
+          <button class="tog" data-val="b">♭</button>
+          <button class="tog sel" data-val="n">♮</button>
+          <button class="tog" data-val="#">♯</button>
+        </div>
+      </div>
+      <div class="builder-box box-sm">
+        <div class="box-label">옥타브</div>
+        <div class="btn-group col" id="chordOctGroup">
+          <button class="tog" data-val="2">2</button>
+          <button class="tog sel" data-val="3">3</button>
+          <button class="tog" data-val="4">4</button>
+          <button class="tog" data-val="5">5</button>
+        </div>
+      </div>
+      <div class="builder-box box-sm">
+        <div class="box-label">자리바꿈</div>
+        <div class="btn-group col" id="invGroup">
+          <button class="tog sel" data-val="0">근위</button>
+          <button class="tog" data-val="1">1전위</button>
+          <button class="tog" data-val="2">2전위</button>
+          <button class="tog" data-val="3">3전위</button>
+        </div>
+      </div>
+      <div class="builder-box">
+        <div class="box-label">코드 타입</div>
+        <div class="btn-group" id="qualGroup">
+          <button class="tog sel" data-val="maj">maj</button><button class="tog" data-val="m">m</button>
+          <button class="tog" data-val="7">7</button><button class="tog" data-val="maj7">maj7</button>
+          <button class="tog" data-val="m7">m7</button><button class="tog" data-val="6">6</button>
+          <button class="tog" data-val="m6">m6</button><button class="tog" data-val="sus2">sus2</button>
+          <button class="tog" data-val="sus4">sus4</button><button class="tog" data-val="dim">dim</button>
+          <button class="tog" data-val="dim7">dim7</button><button class="tog" data-val="aug">aug</button>
+        </div>
+      </div>
+      <div class="preview-box">
+        <div class="box-label">선택 코드</div>
+        <div class="preview-chord" id="chordPreview">C</div>
+        <div class="dim" style="font-size:.68rem">마디 클릭 → 배치</div>
+        <button class="preview-play-btn" id="chordPreviewPlay">▶ 미리듣기</button>
+      </div>
+    </div>
+
+    <!-- 멜로디 빌더 -->
+    <div class="builder hidden" id="melodyBuilder">
+      <div class="builder-box">
+        <div class="box-label">음</div>
+        <div class="btn-group" id="melRootGroup">
+          <button class="tog sel" data-val="C">C</button><button class="tog" data-val="D">D</button>
+          <button class="tog" data-val="E">E</button><button class="tog" data-val="F">F</button>
+          <button class="tog" data-val="G">G</button><button class="tog" data-val="A">A</button>
+          <button class="tog" data-val="B">B</button>
+        </div>
+      </div>
+      <div class="builder-box box-sm">
+        <div class="box-label">변음</div>
+        <div class="btn-group col" id="melAccGroup">
+          <button class="tog" data-val="b">♭</button>
+          <button class="tog sel" data-val="n">♮</button>
+          <button class="tog" data-val="#">♯</button>
+        </div>
+      </div>
+      <div class="builder-box box-sm">
+        <div class="box-label">옥타브</div>
+        <div class="btn-group col" id="melOctGroup">
+          <button class="tog" data-val="1">1</button>
+          <button class="tog" data-val="2">2</button>
+          <button class="tog" data-val="3">3</button>
+          <button class="tog sel" data-val="4">4</button>
+          <button class="tog" data-val="5">5</button>
+        </div>
+      </div>
+      <div class="preview-box">
+        <div class="box-label">선택 음</div>
+        <div class="preview-chord" id="melPreview">C4</div>
+        <div class="dim" style="font-size:.68rem">멜로디 트랙에 배치</div>
+        <button class="preview-play-btn" id="melPreviewPlay">▶ 미리듣기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 도돌이표 설정 힌트 -->
+  <div class="hint-bar hidden" id="hintBar">
+    <span id="hintText"></span>
+    <button class="action-btn" id="hintCancelBtn">취소</button>
+  </div>
+
+  <!-- 재생 진행바 -->
+  <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- 트랙 영역 -->
+  <div class="tracks-area" id="tracksArea"></div>
+  <div class="add-track-row">
+    <button class="action-btn" id="addChordTrack">+ 코드 트랙</button>
+    <button class="action-btn" id="addMelTrack">+ 멜로디 트랙</button>
+    <button class="action-btn" id="addBassTrack">+ 베이스 트랙</button>
+    <button class="action-btn" id="addDrumTrack">🥁 드럼 트랙</button>
+    <button class="action-btn" id="addVocalTrack">🎤 보컬 트랙</button>
+    <span style="margin-left:auto"></span>
+    <button class="action-btn" id="progPresetBtn">🎵 코드 진행 프리셋</button>
+  </div>
+  <div class="prog-preset-panel hidden" id="progPresetPanel">
+    <label class="pp-label">키</label>
+    <select id="progKeySelect">
+      <option value="0">C</option><option value="1">C#</option>
+      <option value="2">D</option><option value="3">E♭</option>
+      <option value="4">E</option><option value="5">F</option>
+      <option value="6">F#</option><option value="7">G</option>
+      <option value="8">A♭</option><option value="9">A</option>
+      <option value="10">B♭</option><option value="11">B</option>
+    </select>
+    <label class="pp-label">진행</label>
+    <select id="progSelect">
+      <option value="pop">팝 (I-V-vi-IV)</option>
+      <option value="ballad">발라드 (I-vi-IV-V)</option>
+      <option value="ballad2">발라드2 (I-IV-I-V)</option>
+      <option value="canon">카논 (8마디)</option>
+      <option value="kpop">K-Pop (vi-IV-I-V)</option>
+      <option value="minor">마이너 (i-VI-III-VII)</option>
+      <option value="jazz">재즈 (ii-V-I)</option>
+    </select>
+    <button class="action-btn" id="progApplyBtn">전체 마디 채우기</button>
+  </div>
+
+  <!-- 드래그 고스트 -->
+  <div class="drag-ghost hidden" id="dragGhost"></div>
+
+  <!-- 트랜스포트 -->
+  <footer class="transport">
+    <button class="play-btn" id="playBtn">▶ 재생</button>
+    <button class="stop-btn" id="stopBtn">⏹</button>
+    <button class="loop-btn" id="loopBtn" title="반복 재생 켜기/끄기">🔁 반복</button>
+    <button class="rec-play-btn" id="recPlayBtn" title="재생하면서 보컬 녹음">🔴 녹음+재생</button>
+    <span class="dim" id="nowLabel" style="margin-left:auto">대기 중</span>
+  </footer>
+
+</div>
+<div class="modal-overlay hidden" id="projectModal">
+  <div class="modal-box">
+    <div class="modal-head">📁 프로젝트 관리</div>
+    <div id="saveSlotList"></div>
+    <div class="modal-new">
+      <input type="text" id="saveNameInput" placeholder="프로젝트 이름..." maxlength="40">
+      <button id="saveNewBtn">💾 현재 상태 저장</button>
+    </div>
+    <button class="modal-close" id="modalCloseBtn">✕ 닫기</button>
+  </div>
+</div>
+<div class="modal-overlay hidden" id="drumEditorModal">
+  <div class="modal-box drum-edit-box">
+    <div class="modal-head">🥁 드럼 편집 — <span id="drumEditBarNum"></span>마디</div>
+    <div class="drum-edit-presets" id="drumEditorPresets"></div>
+    <div class="drum-edit-grid" id="drumEditorGrid"></div>
+    <button class="modal-close" id="drumEditClose">✕ 닫기</button>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
