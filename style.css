@@ -346,8 +346,12 @@ select{background:var(--s2);border:1px solid var(--bd);color:var(--text);padding
   .track-name-input { font-size: .74rem; }
   .track-selects select { font-size: 13px; }
 
+  /* 바 영역 가로 스크롤 */
+  .track-bars { overflow-x: auto; overflow-y: visible; -webkit-overflow-scrolling: touch; }
+  .track-bars::-webkit-scrollbar { display: none; }
+
   /* 바 셀 가독성 */
-  .bar-cell { min-width: 62px; }
+  .bar-cell { min-width: 56px; }
   .bar-root { font-size: 1.1rem; }
   .bar-num { font-size: .62rem; }
   .bar-qual { font-size: .68rem; }
