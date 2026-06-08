@@ -334,11 +334,12 @@ select{background:var(--s2);border:1px solid var(--bd);color:var(--text);padding
   /* 버튼 탭 딜레이 제거 */
   button, select, input { touch-action: manipulation; }
 
-  /* 빌더: 줄바꿈 허용 */
+  /* 빌더 */
   .builder { padding: 6px 10px 8px; gap: 5px; }
-  .tog { padding: 6px 10px; font-size: .84rem; white-space: nowrap; }
-  .preview-chord { font-size: 1.4rem; }
-  .preview-play-btn { font-size: .8rem; padding: 5px 10px; }
+  .tog { padding: 5px 8px; font-size: .8rem; white-space: nowrap; }
+  .row-label { min-width: 28px; font-size: .58rem; }
+  .preview-chord { font-size: 1.1rem; }
+  .preview-play-btn { font-size: .7rem; padding: 4px 6px; }
 
   /* 트랙 헤더 좁게 */
   .track-header { width: 110px; padding: 6px; }
