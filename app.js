@@ -3,14 +3,35 @@ const NOTE_PCS   = {C:0,D:2,E:4,F:5,G:7,A:9,B:11};
 const ACC_OFFSET = {b:-1,n:0,'#':1};
 const NOTES_ALL  = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const QUALITY_INTERVALS = {
-  maj:[0,4,7], m:[0,3,7], '7':[0,4,7,10], maj7:[0,4,7,11], m7:[0,3,7,10],
-  '6':[0,4,7,9], m6:[0,3,7,9],
-  sus2:[0,2,7], sus4:[0,5,7], dim:[0,3,6], dim7:[0,3,6,9], aug:[0,4,8],
+  /* 기본 */
+  maj:[0,4,7], m:[0,3,7], '5':[0,7],
+  /* 7th */
+  '7':[0,4,7,10], maj7:[0,4,7,11], m7:[0,3,7,10],
+  m7b5:[0,3,6,10], dim7:[0,3,6,9], aug7:[0,4,8,10],
+  '7sus4':[0,5,7,10], '7sus2':[0,2,7,10],
+  /* 6th */
+  '6':[0,4,7,9], m6:[0,3,7,9], '69':[0,4,7,9,14],
+  /* 9th */
+  '9':[0,4,7,10,14], maj9:[0,4,7,11,14], m9:[0,3,7,10,14],
+  add9:[0,4,7,14], madd9:[0,3,7,14],
+  /* 11th */
+  '11':[0,4,7,10,14,17], maj11:[0,4,7,11,14,17], m11:[0,3,7,10,14,17],
+  /* 13th */
+  '13':[0,4,7,10,14,17,21], maj13:[0,4,7,11,14,17,21], m13:[0,3,7,10,14,17,21],
+  /* sus / dim / aug */
+  sus2:[0,2,7], sus4:[0,5,7], dim:[0,3,6], aug:[0,4,8],
 };
 const QUALITY_COLORS = {
-  maj:'#4a90d9',m:'#5a9e6f','7':'#e8a44a',maj7:'#5a9e9e',m7:'#9e5aae',
-  '6':'#c8a440',m6:'#7ab87a',
-  sus2:'#4ab8d9',sus4:'#7ab85a',dim:'#e85a4a',dim7:'#b03030',aug:'#d94a9e',
+  maj:'#4a90d9', m:'#5a9e6f', '5':'#7a8898',
+  '7':'#e8a44a', maj7:'#5a9e9e', m7:'#9e5aae',
+  m7b5:'#c04040', dim7:'#b03030', aug7:'#d94a9e',
+  '7sus4':'#3aabbb', '7sus2':'#5ab8cc',
+  '6':'#c8a440', m6:'#7ab87a', '69':'#c89a30',
+  '9':'#e07a20', maj9:'#4ab8b8', m9:'#8840b8',
+  add9:'#60b050', madd9:'#50a060',
+  '11':'#c86820', maj11:'#3898a8', m11:'#7030a8',
+  '13':'#d4a020', maj13:'#30a878', m13:'#6028a0',
+  sus2:'#4ab8d9', sus4:'#7ab85a', dim:'#e85a4a', aug:'#d94a9e',
 };
 const TRACK_COLORS = ['#6c63ff','#e85a4a','#4ecdc4','#e8a44a','#9e5aae','#5a9e6f','#d94a9e','#4a90d9'];
 
@@ -152,8 +173,12 @@ function getRootPc(root, acc) { return ((NOTE_PCS[root]+ACC_OFFSET[acc])+12)%12;
 function noteLabel(root, acc) {
   return root + (acc==='b'?'♭':acc==='#'?'♯':'');
 }
+const QUALITY_DISPLAY = {
+  maj:'', m7b5:'m7♭5', '69':'6/9', add9:'(add9)', madd9:'m(add9)',
+};
 function chordLabel(root, acc, quality) {
-  return noteLabel(root,acc) + (quality==='maj'?'':quality);
+  const disp = quality in QUALITY_DISPLAY ? QUALITY_DISPLAY[quality] : quality;
+  return noteLabel(root,acc) + disp;
 }
 function chordColor(quality) { return QUALITY_COLORS[quality]||'#4a90d9'; }
 

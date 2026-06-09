@@ -1,4 +1,4 @@
-const CACHE = 'minchord-v5';
+const CACHE = 'minchord-v6';
 const ASSETS = [
   '/minchord/',
   '/minchord/index.html',
