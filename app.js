@@ -3076,6 +3076,21 @@ $('camPlayBtn').addEventListener('click', () => {
   }
 });
 
+// ─── THEME TOGGLE ─────────────────────────
+(function() {
+  const btn = $('themeBtn');
+  const apply = dark => {
+    document.body.classList.toggle('dark', dark);
+    btn.textContent = dark ? '☀️' : '🌙';
+  };
+  apply(localStorage.getItem('theme') === 'dark');
+  btn.addEventListener('click', () => {
+    const isDark = !document.body.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    apply(isDark);
+  });
+})();
+
 // ─── INIT ─────────────────────────────────
 createTrack('chord');
 updatePreviews();
