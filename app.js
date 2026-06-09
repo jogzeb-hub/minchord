@@ -959,9 +959,12 @@ function renderTracks() {
         <span>볼륨</span>
         <input type="range" class="vol-slider" min="0" max="1.5" step="0.05" value="${track.volume??1}" data-tid="${track.id}">
         <span class="vol-val" data-tid="${track.id}">${Math.round((track.volume??1)*100)}%</span>
-        ${track.type !== 'drum' && track.type !== 'vocal' ? `<button class="oct-shift-btn" data-tid="${track.id}" data-dir="-1" title="옥타브 내리기">↓8</button>
-        <button class="oct-shift-btn" data-tid="${track.id}" data-dir="1"  title="옥타브 올리기">↑8</button>` : ''}
       </div>
+      ${track.type !== 'drum' && track.type !== 'vocal' ? `<div class="vol-row">
+        <span>옥타브</span>
+        <button class="oct-shift-btn" data-tid="${track.id}" data-dir="-1" title="옥타브 내리기">↓8</button>
+        <button class="oct-shift-btn" data-tid="${track.id}" data-dir="1"  title="옥타브 올리기">↑8</button>
+      </div>` : ''}
       ${!track.samplerLoaded?`<span class="loading-ind" data-loading="${track.id}">샘플 로딩 중...</span>`:''}
     `;
 
