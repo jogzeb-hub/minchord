@@ -3081,7 +3081,7 @@ $('camPlayBtn').addEventListener('click', () => {
   const btn = $('themeBtn');
   const apply = dark => {
     document.body.classList.toggle('dark', dark);
-    btn.textContent = dark ? '☀️' : '🌙';
+    btn.textContent = dark ? '☀️ 라이트모드' : '🌙 다크모드';
   };
   apply(localStorage.getItem('theme') === 'dark');
   btn.addEventListener('click', () => {
