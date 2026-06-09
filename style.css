@@ -86,7 +86,7 @@ select{background:var(--s2);border:1px solid var(--bd);color:var(--text);padding
 .del-track-btn:hover{color:var(--red);}
 .track-selects{display:flex;flex-direction:column;gap:3px;}
 .track-selects select{font-size:.72rem;padding:2px 4px;}
-.tie-all-btn,.tie-clr-btn{padding:2px 6px;border-radius:4px;border:1px solid var(--bd);background:var(--bg);color:var(--dim);cursor:pointer;font-size:.68rem;transition:all .12s;text-align:left;}
+.tie-all-btn,.tie-clr-btn{padding:2px 6px;border-radius:4px;border:1px solid var(--bd);background:var(--bg);color:var(--dim);cursor:pointer;font-size:.68rem;transition:all .12s;text-align:left;white-space:nowrap;}
 .tie-all-btn:hover{border-color:#ffe66d;color:#ffe66d;}
 .tie-clr-btn:hover{border-color:var(--red);color:var(--red);}
 
