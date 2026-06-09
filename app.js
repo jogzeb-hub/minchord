@@ -426,15 +426,19 @@ function makeSynth(sound, onload) {
 
   if (sound === 'clean') {
     // soundgo 스타일: 삼각파 + 로우패스 1800Hz, 리버브 없음
+    // soundgo chordGain max 0.2 (4 osc 합산) 기준으로 볼륨 맞춤
+    const lim  = new Tone.Limiter(-2);
+    lim.toDestination();
     const flt  = new Tone.Filter(1800, 'lowpass');
-    flt.toDestination();
-    const gain = new Tone.Gain(0.55);
+    flt.connect(lim);
+    const gain = new Tone.Gain(0.22);
     gain.connect(flt);
     const poly = new Tone.PolySynth(Tone.Synth, {
+      volume: -4,
       oscillator: { type: 'triangle' },
       envelope:   { attack: 0.04, decay: 0.01, sustain: 1.0, release: 0.12 },
     });
-    poly.maxPolyphony = 12;
+    poly.maxPolyphony = 8;
     poly.connect(gain);
     return { poly, gain };
   }
