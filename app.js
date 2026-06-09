@@ -458,6 +458,21 @@ function makeSynth(sound, onload) {
     return { poly, gain };
   }
 
+  if (sound === 'clean') {
+    // soundgo 스타일: 삼각파 + 로우패스 1800Hz, 리버브 없음
+    const flt  = new Tone.Filter(1800, 'lowpass');
+    flt.toDestination();
+    const gain = new Tone.Gain(0.55);
+    gain.connect(flt);
+    const poly = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: 'triangle' },
+      envelope:   { attack: 0.04, decay: 0.01, sustain: 1.0, release: 0.12 },
+    });
+    poly.maxPolyphony = 12;
+    poly.connect(gain);
+    return { poly, gain };
+  }
+
   if (sound === 'mellow') {
     const rv   = getSharedReverb('mellow', 1.8, 0.15);
     const lim  = new Tone.Limiter(-2);
@@ -983,6 +998,7 @@ function renderTracks() {
       <div class="track-selects">
         ${track.type !== 'drum' && track.type !== 'vocal' ? `<select class="track-sound" data-tid="${track.id}">
           <option value="piano"${track.sound==='piano'?' selected':''}>🎹 피아노</option>
+          <option value="clean"${track.sound==='clean'?' selected':''}>✨ 클린</option>
           <option value="mellow"${track.sound==='mellow'?' selected':''}>🌊 멜로우</option>
           <option value="bell"${track.sound==='bell'?' selected':''}>🔔 벨</option>
           <option value="guitar"${track.sound==='guitar'?' selected':''}>🎸 기타</option>
