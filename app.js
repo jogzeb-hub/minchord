@@ -229,7 +229,17 @@ const PIANO_URLS = {
 };
 const PIANO_BASE  = 'https://tonejs.github.io/audio/salamander/';
 
-const SAMPLER_SOUNDS = new Set(['piano']);
+const GLEITZ_URLS = {
+  'A1':'A1.mp3','C2':'C2.mp3','Eb2':'Ds2.mp3','Gb2':'Fs2.mp3',
+  'A2':'A2.mp3','C3':'C3.mp3','Eb3':'Ds3.mp3','Gb3':'Fs3.mp3',
+  'A3':'A3.mp3','C4':'C4.mp3','Eb4':'Ds4.mp3','Gb4':'Fs4.mp3',
+  'A4':'A4.mp3','C5':'C5.mp3','Eb5':'Ds5.mp3','Gb5':'Fs5.mp3',
+  'A5':'A5.mp3','C6':'C6.mp3','Eb6':'Ds6.mp3','Gb6':'Fs6.mp3',
+  'A6':'A6.mp3','C7':'C7.mp3',
+};
+const GLEITZ_BASE = 'https://gleitz.github.io/midi-js-soundfonts/MusyngKite/';
+
+const SAMPLER_SOUNDS = new Set(['piano','rhodes','ngitar','sgitar','vib','choir','sambass']);
 const VEL_LEVELS = [
   {label:'pp',v:0.30},{label:'p',v:0.50},{label:'mp',v:0.70},
   {label:'mf',v:1.00},{label:'f',v:1.20},{label:'ff',v:1.40},
@@ -330,6 +340,29 @@ function makeSynth(sound, onload) {
       releaseAll() {},
       dispose() { voices.forEach(v => { try{v.dispose();}catch(e){} }); },
     };
+    return { poly, gain };
+  }
+
+  if (['rhodes','ngitar','sgitar','vib','choir','sambass'].includes(sound)) {
+    const CFG = {
+      rhodes:  { inst:'electric_piano_1',      rv:'piano',   rt:1.0, rw:0.12, gv:0.78, rel:1.0 },
+      ngitar:  { inst:'acoustic_guitar_nylon',  rv:'piano',   rt:1.5, rw:0.16, gv:0.85, rel:0.8 },
+      sgitar:  { inst:'acoustic_guitar_steel',  rv:'piano',   rt:1.2, rw:0.13, gv:0.82, rel:0.7 },
+      vib:     { inst:'vibraphone',             rv:'bell',    rt:2.5, rw:0.30, gv:0.70, rel:1.5 },
+      choir:   { inst:'choir_aahs',             rv:'strings', rt:2.0, rw:0.35, gv:0.65, rel:1.2 },
+      sambass: { inst:'acoustic_bass',          rv:'piano',   rt:0.6, rw:0.08, gv:0.90, rel:0.5 },
+    };
+    const c   = CFG[sound];
+    const rv  = getSharedReverb(c.rv, c.rt, c.rw);
+    const gain = new Tone.Gain(c.gv);
+    gain.connect(rv);
+    const poly = new Tone.Sampler({
+      urls: GLEITZ_URLS,
+      baseUrl: GLEITZ_BASE + c.inst + '-mp3/',
+      release: c.rel,
+      onload: onload || (() => {}),
+    });
+    poly.connect(gain);
     return { poly, gain };
   }
 
@@ -933,6 +966,12 @@ function renderTracks() {
           <option value="organ"${track.sound==='organ'?' selected':''}>🎵 오르간</option>
           <option value="bass"${track.sound==='bass'?' selected':''}>🎵 베이스</option>
           <option value="ebass"${track.sound==='ebass'?' selected':''}>🎸 일렉베이스</option>
+          <option value="rhodes"${track.sound==='rhodes'?' selected':''}>🎹 로즈피아노</option>
+          <option value="ngitar"${track.sound==='ngitar'?' selected':''}>🎸 나일론기타</option>
+          <option value="sgitar"${track.sound==='sgitar'?' selected':''}>🎸 스틸기타</option>
+          <option value="vib"${track.sound==='vib'?' selected':''}>🎵 비브라폰</option>
+          <option value="choir"${track.sound==='choir'?' selected':''}>🎤 합창</option>
+          <option value="sambass"${track.sound==='sambass'?' selected':''}>🎸 더블베이스</option>
         </select>` : ''}
         ${track.type==='chord'?`
         <select class="track-pattern" data-tid="${track.id}">
