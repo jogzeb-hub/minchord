@@ -285,8 +285,9 @@ function makeSynth(sound, onload) {
   if (sound === 'bell') {
     // FM 합성 → 배음 구조 있는 진짜 벨 소리
     const rv   = getSharedReverb('bell', 3.5, 0.50);
+    const lim  = new Tone.Limiter(-3); lim.connect(rv);
     const gain = new Tone.Gain(0.42);
-    gain.connect(rv);
+    gain.connect(lim);
     const poly = new Tone.PolySynth(Tone.FMSynth, {
       harmonicity: 5.1,
       modulationIndex: 3.2,
@@ -333,8 +334,9 @@ function makeSynth(sound, onload) {
   if (sound === 'guitar') {
     // Karplus-Strong 현악기 알고리즘 — 실제 현 퉁기는 소리
     const rv   = getSharedReverb('piano', 1.8, 0.14);
+    const lim  = new Tone.Limiter(-3); lim.connect(rv);
     const gain = new Tone.Gain(0.95);
-    gain.connect(rv);
+    gain.connect(lim);
     // PluckSynth는 모노포닉이라 6개 생성해 폴리포니 구현
     const voices = Array.from({ length: 6 }, () => {
       const v = new Tone.PluckSynth({ attackNoise:1.5, dampening:4200, resonance:0.97 });
@@ -361,8 +363,9 @@ function makeSynth(sound, onload) {
   if (sound === 'elec') {
     // 기존 전자음 (삼각파 플럭)
     const rv   = getSharedReverb('piano', 0.9, 0.10);
+    const lim  = new Tone.Limiter(-3); lim.connect(rv);
     const gain = new Tone.Gain(0.88);
-    gain.connect(rv);
+    gain.connect(lim);
     const poly = new Tone.PolySynth(Tone.Synth, {
       volume: -2,
       oscillator: { type: 'triangle' },
@@ -395,8 +398,9 @@ function makeSynth(sound, onload) {
   if (sound === 'flute') {
     // 순수 사인파 — 단순하고 깨끗
     const rv   = getSharedReverb('mellow', 1.8, 0.15);
+    const lim  = new Tone.Limiter(-3); lim.connect(rv);
     const gain = new Tone.Gain(0.62);
-    gain.connect(rv);
+    gain.connect(lim);
     const poly = new Tone.PolySynth(Tone.Synth, {
       volume: -6,
       oscillator: { type: 'sine' },
@@ -461,8 +465,9 @@ function makeSynth(sound, onload) {
 
   // piano (기본) — Salamander Grand Piano 샘플러
   const rv   = getSharedReverb('piano', 0.9, 0.10);
+  const lim  = new Tone.Limiter(-3); lim.connect(rv);
   const gain = new Tone.Gain(0.72);
-  gain.connect(rv);
+  gain.connect(lim);
   const poly = new Tone.Sampler({
     urls: PIANO_URLS,
     baseUrl: PIANO_BASE,
