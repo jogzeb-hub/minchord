@@ -262,7 +262,7 @@ const GLEITZ_URLS = {
   'A5':'A5.mp3','C6':'C6.mp3','Eb6':'Ds6.mp3','Gb6':'Fs6.mp3',
   'A6':'A6.mp3','C7':'C7.mp3',
 };
-const GLEITZ_BASE = 'https://gleitz.github.io/midi-js-soundfonts/MusyngKite/';
+const GLEITZ_BASE = 'https://cdn.jsdelivr.net/gh/gleitz/midi-js-soundfonts@gh-pages/MusyngKite/';
 
 const SAMPLER_SOUNDS = new Set(['piano','rhodes','ngitar','sgitar','vib','choir','sambass']);
 const VEL_LEVELS = [
@@ -370,12 +370,12 @@ function makeSynth(sound, onload) {
 
   if (['rhodes','ngitar','sgitar','vib','choir','sambass'].includes(sound)) {
     const CFG = {
-      rhodes:  { inst:'electric_piano_1',      rv:'piano',   rt:1.0, rw:0.12, gv:0.78, rel:1.0 },
-      ngitar:  { inst:'acoustic_guitar_nylon',  rv:'piano',   rt:1.5, rw:0.16, gv:0.85, rel:0.8 },
-      sgitar:  { inst:'acoustic_guitar_steel',  rv:'piano',   rt:1.2, rw:0.13, gv:0.82, rel:0.7 },
-      vib:     { inst:'vibraphone',             rv:'bell',    rt:2.5, rw:0.30, gv:0.70, rel:1.5 },
-      choir:   { inst:'choir_aahs',             rv:'strings', rt:2.0, rw:0.35, gv:0.65, rel:1.2 },
-      sambass: { inst:'acoustic_bass',          rv:'piano',   rt:0.6, rw:0.08, gv:0.90, rel:0.5 },
+      rhodes:  { inst:'electric_piano_1',      rv:'piano',   rt:1.0, rw:0.12, gv:0.78, rel:1.0, atk:0.01 },
+      ngitar:  { inst:'acoustic_guitar_nylon',  rv:'piano',   rt:1.5, rw:0.16, gv:0.85, rel:0.9, atk:0.01 },
+      sgitar:  { inst:'acoustic_guitar_steel',  rv:'piano',   rt:1.2, rw:0.13, gv:0.82, rel:0.8, atk:0.01 },
+      vib:     { inst:'vibraphone',             rv:'bell',    rt:2.5, rw:0.30, gv:0.70, rel:1.5, atk:0.01 },
+      choir:   { inst:'choir_aahs',             rv:'strings', rt:2.0, rw:0.35, gv:0.60, rel:1.5, atk:0.12 },
+      sambass: { inst:'acoustic_bass',          rv:'piano',   rt:0.6, rw:0.08, gv:0.90, rel:0.5, atk:0.01 },
     };
     const c   = CFG[sound];
     const rv  = getSharedReverb(c.rv, c.rt, c.rw);
@@ -384,6 +384,7 @@ function makeSynth(sound, onload) {
     const poly = new Tone.Sampler({
       urls: GLEITZ_URLS,
       baseUrl: GLEITZ_BASE + c.inst + '-mp3/',
+      attack: c.atk,
       release: c.rel,
       onload: onload || (() => {}),
     });
