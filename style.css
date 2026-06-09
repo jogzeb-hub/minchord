@@ -1,8 +1,8 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#0f0f17;--s1:#1a1a2e;--s2:#252540;--bd:#2e2e4e;
-  --acc:#6c63ff;--red:#e85a4a;--text:#e0e0f0;--dim:#6666aa;
-  --sel:#3a6fcc;--rep:#e8a44a;
+  --bg:#0f1117;--s1:#161d2e;--s2:#1c2438;--bd:#243050;
+  --acc:#0064ff;--red:#f04452;--text:#f0f2f5;--dim:#6b7fa3;
+  --sel:#0054d4;--rep:#f0a020;
 }
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;height:100vh;overflow:hidden;}
 .app{height:100vh;display:flex;flex-direction:column;}

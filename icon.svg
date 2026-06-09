@@ -1,22 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#16103a"/>
-      <stop offset="100%" stop-color="#7c74ff"/>
+      <stop offset="0%" stop-color="#0d1525"/>
+      <stop offset="100%" stop-color="#0064ff"/>
     </linearGradient>
   </defs>
-  <!-- 배경 -->
   <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-  <!-- 왼쪽 음표 머리 -->
   <ellipse cx="152" cy="355" rx="66" ry="48" transform="rotate(-18 152 355)" fill="white"/>
-  <!-- 오른쪽 음표 머리 -->
   <ellipse cx="338" cy="302" rx="66" ry="48" transform="rotate(-18 338 302)" fill="white"/>
-  <!-- 왼쪽 기둥 -->
   <rect x="202" y="140" width="22" height="222" rx="11" fill="white"/>
-  <!-- 오른쪽 기둥 -->
   <rect x="388" y="86" width="22" height="223" rx="11" fill="white"/>
-  <!-- 빔 1 (두꺼운 가로줄) -->
   <path d="M202,140 L410,84 L410,118 L202,174 Z" fill="white"/>
-  <!-- 빔 2 -->
   <path d="M202,178 L410,122 L410,156 L202,212 Z" fill="white"/>
 </svg>
