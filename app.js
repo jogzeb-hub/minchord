@@ -947,12 +947,12 @@ function renderTracks() {
           <option value="afrocuban"${track.pattern==='afrocuban'?' selected':''}>아프로큐반</option>
           <option value="jazzcomp"${track.pattern==='jazzcomp'?' selected':''}>재즈 콤핑</option>
         </select>
-        <button class="tie-all-btn" data-tid="${track.id}" title="연속 동일 코드 일괄 이음">🔗 일괄 이음</button>
-        <button class="tie-clr-btn" data-tid="${track.id}" title="모든 이음 해제">✂ 일괄 이음 해제</button>`
+        <button class="tie-all-btn" data-tid="${track.id}" title="연속 동일 코드 일괄 이음">🔗 이음</button>
+        <button class="tie-clr-btn" data-tid="${track.id}" title="모든 이음 해제">✂ 해제</button>`
         : track.type==='drum' ? ``
         : track.type==='vocal' ? `<button class="vocal-rec-toggle${_vocalRec?.trackId===track.id?' recording':''}" data-tid="${track.id}">${_vocalRec?.trackId===track.id?'⏹ 녹음 중지':'🔴 녹음'}</button>`
-        : `<button class="tie-all-btn" data-tid="${track.id}" title="연속 동일 음 일괄 이음">🔗 일괄 이음</button>
-           <button class="tie-clr-btn" data-tid="${track.id}" title="모든 이음 해제">✂ 이음 해제</button>`}
+        : `<button class="tie-all-btn" data-tid="${track.id}" title="연속 동일 음 일괄 이음">🔗 이음</button>
+           <button class="tie-clr-btn" data-tid="${track.id}" title="모든 이음 해제">✂ 해제</button>`}
         ${track.type !== 'drum' && track.type !== 'vocal' ? `<button class="bulk-div-btn" data-tid="${track.id}" title="모든 마디 일괄 박자 쪼개기">÷ 전체 쪼개기</button>` : ''}
       </div>
       <div class="vol-row">
