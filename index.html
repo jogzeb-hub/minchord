@@ -277,7 +277,23 @@
     <button class="loop-btn" id="loopBtn" title="반복 재생 켜기/끄기">🔁 반복</button>
     <button class="rec-play-btn" id="recPlayBtn" title="재생하면서 보컬 녹음">🔴 녹음+재생</button>
     <span class="dim" id="nowLabel" style="margin-left:auto">대기 중</span>
+    <button class="cam-btn" id="camBtn" title="카메라 퍼포먼스 모드">📷</button>
   </footer>
+
+  <!-- 카메라 퍼포먼스 오버레이 -->
+  <div class="cam-overlay hidden" id="camOverlay">
+    <video class="cam-video" id="camVideo" autoplay playsinline muted></video>
+    <div class="cam-grad-top"></div>
+    <div class="cam-grad-bottom"></div>
+    <div class="cam-chord-wrap">
+      <div class="cam-bar-lbl" id="camBarLbl"></div>
+      <div class="cam-chord" id="camChord">—</div>
+    </div>
+    <div class="cam-controls">
+      <button class="cam-play-btn" id="camPlayBtn">▶ 재생</button>
+      <button class="cam-exit-btn" id="camExitBtn">✕ 나가기</button>
+    </div>
+  </div>
 
 </div>
 <div class="modal-overlay hidden" id="projectModal">

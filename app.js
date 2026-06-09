@@ -2644,6 +2644,7 @@ function animLoop() {
     $('nowLabel').textContent = `마디 ${visual+1}`;
     document.querySelectorAll('.bar-cell.active-bar').forEach(el=>el.classList.remove('active-bar'));
     document.querySelectorAll(`.bar-cell[data-bar="${visual}"]`).forEach(el=>el.classList.add('active-bar'));
+    updateCamChord(visual);
   }
   // 보컬 타임라인 재생 커서
   const songSec = Tone.Transport.seconds - 0.1;
@@ -2979,6 +2980,62 @@ $('builderToggleBtn').addEventListener('click', () => {
   $('builderToggleBtn').textContent = collapsed ? '▼' : '▲';
 });
 $('drumEditorModal').addEventListener('click', e => { if(e.target===$('drumEditorModal')) $('drumEditorModal').classList.add('hidden'); });
+
+// ─── CAMERA MODE ──────────────────────────
+let _camStream = null, _wakeLock = null;
+
+function updateCamChord(visual) {
+  const chordEl = $('camChord');
+  const barEl   = $('camBarLbl');
+  if (!chordEl) return;
+  const t = S.tracks.find(tr => tr.type === 'chord' && !tr.muted) || S.tracks.find(tr => tr.type === 'chord');
+  if (visual === undefined) {
+    // 재생 전: 첫 코드 표시
+    const first = t?.bars?.find(b => b);
+    chordEl.textContent = first?.label || '—';
+    if (barEl) barEl.textContent = '';
+    return;
+  }
+  const item = t?.bars?.[visual];
+  chordEl.textContent = item?.label || '—';
+  if (barEl) barEl.textContent = item ? `마디 ${visual + 1}` : '';
+}
+
+async function startCameraMode() {
+  try {
+    _camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    $('camVideo').srcObject = _camStream;
+    $('camOverlay').classList.remove('hidden');
+    if ('wakeLock' in navigator) {
+      try { _wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {}
+    }
+    updateCamChord();
+  } catch(e) {
+    alert('카메라 권한이 필요해요.\n' + e.message);
+  }
+}
+
+function exitCameraMode() {
+  if (_camStream) { _camStream.getTracks().forEach(t => t.stop()); _camStream = null; }
+  if (_wakeLock)  { try { _wakeLock.release(); } catch(e) {} _wakeLock = null; }
+  $('camVideo').srcObject = null;
+  $('camOverlay').classList.add('hidden');
+}
+
+$('camBtn').addEventListener('click', startCameraMode);
+$('camExitBtn').addEventListener('click', exitCameraMode);
+$('camPlayBtn').addEventListener('click', () => {
+  if (S.isPlaying) {
+    stopPlay();
+    $('camPlayBtn').textContent = '▶ 재생';
+    $('camPlayBtn').classList.remove('playing');
+    updateCamChord();
+  } else {
+    startPlay();
+    $('camPlayBtn').textContent = '⏹ 정지';
+    $('camPlayBtn').classList.add('playing');
+  }
+});
 
 // ─── INIT ─────────────────────────────────
 createTrack('chord');

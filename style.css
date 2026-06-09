@@ -376,6 +376,23 @@ select{background:var(--s2);border:1px solid var(--bd);color:var(--text);padding
   .modal-box { min-width: unset; width: 95%; padding: 14px; }
 }
 
+/* ─── CAMERA MODE ─── */
+.cam-btn{padding:6px 10px;border-radius:7px;border:1px solid var(--bd);background:var(--s2);color:var(--text);cursor:pointer;font-size:.9rem;flex-shrink:0;}
+.cam-btn:hover{background:var(--bd);}
+.cam-overlay{position:fixed;inset:0;z-index:800;background:#000;display:flex;flex-direction:column;}
+.cam-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.cam-grad-top{position:absolute;top:0;left:0;right:0;height:180px;background:linear-gradient(to bottom,rgba(0,0,0,.65),transparent);pointer-events:none;}
+.cam-grad-bottom{position:absolute;bottom:0;left:0;right:0;height:220px;background:linear-gradient(to top,rgba(0,0,0,.8),transparent);pointer-events:none;}
+.cam-chord-wrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
+.cam-bar-lbl{font-size:1rem;color:rgba(255,255,255,.55);font-weight:600;letter-spacing:1px;margin-bottom:10px;}
+.cam-chord{font-size:clamp(5rem,22vw,9rem);font-weight:900;color:#fff;text-shadow:0 4px 40px rgba(0,0,0,.9);line-height:1;letter-spacing:-2px;}
+.cam-controls{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:18px;padding:20px 24px;padding-bottom:max(24px,env(safe-area-inset-bottom));}
+.cam-play-btn{padding:15px 44px;border-radius:50px;border:none;background:var(--acc);color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(108,99,255,.55);transition:background .15s;}
+.cam-play-btn:hover{background:#5a52dd;}
+.cam-play-btn.playing{background:var(--red);}
+.cam-exit-btn{padding:15px 26px;border-radius:50px;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;font-size:1rem;font-weight:600;cursor:pointer;backdrop-filter:blur(10px);transition:background .15s;}
+.cam-exit-btn:hover{background:rgba(255,255,255,.22);}
+
 /* ─── INVERSION BUTTON ─── */
 .bar-inv-btn { position:absolute;bottom:14px;left:24px;opacity:0;font-size:.42rem;color:rgba(255,255,255,.5);cursor:pointer;background:rgba(0,0,0,.35);border:1px solid var(--bd);border-radius:3px;padding:1px 3px;transition:opacity .1s;z-index:2; }
 .bar-cell:hover .bar-inv-btn { opacity:1; }
